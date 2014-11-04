@@ -44,9 +44,9 @@ uint16_t pwm_update_cont;
 uint16_t pwm_at_setpoint;
 
 uint8_t port_mode;
-uint8_t port_do_select;
-uint8_t port_do;
-uint8_t port_di;
+uint16_t port_do_select;
+uint16_t port_do;
+uint16_t port_di;
 
 uint8_t cur_dimm;
 
@@ -56,8 +56,8 @@ PROCESS(port_process, "Port IO Handling");
 
 PROCESS_THREAD(port_process, ev, data)
 {
-	static uint8_t ct0, ct1;
-	uint8_t i, in;
+	static uint16_t ct0, ct1;
+	uint16_t i, in;
 	
 	PROCESS_BEGIN();
 	
@@ -75,7 +75,7 @@ PROCESS_THREAD(port_process, ev, data)
 		i &= ct0 & ct1;				// count until roll over ?
 		port_di ^= i;				// then toggle debounced state
 
-		relay_process();
+		//relay_process();
 		pwm_step();
 		etimer_reset(&port_timer);
 	}
@@ -87,19 +87,13 @@ void port_update_configuration(void)
 {	
 	port_di_init();
 	pwm_init();
-	relay_init();
+	//relay_init();
 }
 
 void port_init(void)
 {	
-	// S_Power is configured regardless of mode
-	PORTA.PIN5CTRL = PORT_INVEN_bm;
-	PORTA.OUTSET = (1<<5);
-	PORTA.DIRSET = (1<<5);
-
 	port_di_init();
 	pwm_init();
-	relay_init();
 	
 	process_start(&port_process, NULL);
 }
@@ -108,21 +102,45 @@ void port_di_init(void)
 {
 	if (port_mode&(1<<PORT_MODE_PULLUP_ENABLE))
 	{
-		PORTC.PIN7CTRL = PORT_OPC_PULLUP_gc;
-		PORTC.PIN6CTRL = PORT_OPC_PULLUP_gc;
+		PORTB.PIN2CTRL = PORT_OPC_PULLUP_gc;
+		PORTB.PIN3CTRL = PORT_OPC_PULLUP_gc;
+		
+		PORTC.PIN0CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN1CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN2CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN3CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN4CTRL = PORT_OPC_PULLUP_gc;
 		PORTC.PIN5CTRL = PORT_OPC_PULLUP_gc;
-		PORTD.PIN5CTRL = PORT_OPC_PULLUP_gc;
-		PORTD.PIN1CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN6CTRL = PORT_OPC_PULLUP_gc;
+		PORTC.PIN7CTRL = PORT_OPC_PULLUP_gc;
+		
 		PORTD.PIN0CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN1CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN2CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN3CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN4CTRL = PORT_OPC_PULLUP_gc;
+		PORTD.PIN5CTRL = PORT_OPC_PULLUP_gc;
 	}
 	else
 	{
-		PORTC.PIN7CTRL = PORT_OPC_TOTEM_gc;
-		PORTC.PIN6CTRL = PORT_OPC_TOTEM_gc;
+		PORTB.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTB.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		
+		PORTC.PIN0CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN1CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN4CTRL = PORT_OPC_TOTEM_gc;
 		PORTC.PIN5CTRL = PORT_OPC_TOTEM_gc;
-		PORTD.PIN5CTRL = PORT_OPC_TOTEM_gc;
-		PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN6CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN7CTRL = PORT_OPC_TOTEM_gc;
+		
 		PORTD.PIN0CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN4CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN5CTRL = PORT_OPC_TOTEM_gc;
 	}
 	
 	// Initial key state
@@ -401,8 +419,8 @@ void servo_power_disable(void)
 void pwm_tick(void)
 {
 	uint8_t port;
-	uint8_t mask;
-	uint8_t port_mask = 0;
+	uint16_t mask;
+	uint16_t port_mask = 0;
 
 	//if (!(port_mode&(1<<PORT_MODE_PWM_ENABLE)))
 	//	return;
@@ -420,11 +438,9 @@ void pwm_tick(void)
 		// Assign outputs
 		if (port_mode&(1<<PORT_MODE_PWM_ENABLE))
 		{
-			PORTA.OUTSET = (port_mask&0b00000011)<<6;
-			PORTB.OUTSET = (port_mask&0b00001100)>>2;
-			PORTC.OUTCLR = (port_mask&0b00110000)>>4;
-			if (port_mode&(1<<PORT_MODE_PWM_CH7_ENABLE))
-				PORTA.OUTSET = (port_mask&0b01000000)>>1;
+			PORTC.OUTSET = (port_mask&0xFF);
+			PORTD.OUTSET = (port_mask>>8)&0x3F;
+			PORTB.OUTSET = (port_mask>>12)&0xC;
 		}		
 	}
 	else
@@ -437,11 +453,9 @@ void pwm_tick(void)
 		// Assign outputs
 		if (port_mode&(1<<PORT_MODE_PWM_ENABLE))
 		{
-			PORTA.OUTCLR = (port_mask&0b00000011)<<6;
-			PORTB.OUTCLR = (port_mask&0b00001100)>>2;
-			PORTC.OUTSET = (port_mask&0b00110000)>>4;
-			if (port_mode&(1<<PORT_MODE_PWM_CH7_ENABLE))
-				PORTA.OUTCLR = (port_mask&0b01000000)>>1;
+			PORTC.OUTCLR = (port_mask&0xFF);
+			PORTD.OUTCLR = (port_mask>>8)&0x3F;
+			PORTB.OUTCLR = (port_mask>>12)&0xC;
 		}
 	}
 }
@@ -524,37 +538,62 @@ void pwm_init(void)
 	if (!(port_mode&(1<<PORT_MODE_PWM_ENABLE)))
 	{	
 		// Revert pins to inputs
-		PORTA.DIRCLR = (1<<6)|(1<<7);
-		PORTB.DIRCLR = (1<<1)|(1<<0);
-		PORTC.DIRCLR = (1<<1)|(1<<0);
+		PORTB.DIRCLR = (1<<2)|(1<<3);
+		PORTC.DIRCLR = 0xFF;
+		PORTD.DIRCLR = 0x3F;
 		
-		PORTA.OUTCLR = (1<<6)|(1<<7);
-		PORTB.OUTCLR = (1<<1)|(1<<0);
-		PORTC.OUTSET = (1<<1)|(1<<0);
+		PORTB.OUTCLR = (1<<2)|(1<<3);
+		PORTC.OUTCLR = 0xFF;
+		PORTD.OUTCLR = 0x3F;
 		
-		PORTA.PIN6CTRL = PORT_OPC_TOTEM_gc;
-		PORTA.PIN7CTRL = PORT_OPC_TOTEM_gc;
-		PORTB.PIN0CTRL = PORT_OPC_TOTEM_gc;
-		PORTB.PIN1CTRL = PORT_OPC_TOTEM_gc;
-		PORTC.PIN0CTRL = PORT_INVEN_bm;
-		PORTC.PIN1CTRL = PORT_INVEN_bm;
+		PORTB.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTB.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		
+		PORTC.PIN0CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN1CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN4CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN5CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN6CTRL = PORT_OPC_TOTEM_gc;
+		PORTC.PIN7CTRL = PORT_OPC_TOTEM_gc;
+		
+		PORTD.PIN0CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN2CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN3CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN4CTRL = PORT_OPC_TOTEM_gc;
+		PORTD.PIN5CTRL = PORT_OPC_TOTEM_gc;
+
 		return;
 	}
 	
 	cur_dimm = DIMM_RANGE_MIN;
 	
-	PORTA.PIN6CTRL = PORT_OPC_TOTEM_gc;
-	PORTA.PIN7CTRL = PORT_OPC_TOTEM_gc;
-	PORTB.PIN0CTRL = PORT_OPC_TOTEM_gc;
-	PORTB.PIN1CTRL = PORT_OPC_TOTEM_gc;
-	PORTC.PIN0CTRL = PORT_INVEN_bm;
-	PORTC.PIN1CTRL = PORT_INVEN_bm;
+	PORTB.PIN2CTRL = PORT_OPC_TOTEM_gc;
+	PORTB.PIN3CTRL = PORT_OPC_TOTEM_gc;
 	
-	PORTA.OUTCLR = (1<<6)|(1<<7);
-	PORTB.OUTCLR = (1<<1)|(1<<0);
-	PORTC.OUTSET = (1<<1)|(1<<0);
+	PORTC.PIN0CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN1CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN2CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN3CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN4CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN5CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN6CTRL = PORT_OPC_TOTEM_gc;
+	PORTC.PIN7CTRL = PORT_OPC_TOTEM_gc;
 	
-	PORTA.DIRSET = (1<<6)|(1<<7);
-	PORTB.DIRSET = (1<<1)|(1<<0);
-	PORTC.DIRSET = (1<<1)|(1<<0);
+	PORTD.PIN0CTRL = PORT_OPC_TOTEM_gc;
+	PORTD.PIN1CTRL = PORT_OPC_TOTEM_gc;
+	PORTD.PIN2CTRL = PORT_OPC_TOTEM_gc;
+	PORTD.PIN3CTRL = PORT_OPC_TOTEM_gc;
+	PORTD.PIN4CTRL = PORT_OPC_TOTEM_gc;
+	PORTD.PIN5CTRL = PORT_OPC_TOTEM_gc;
+	
+	PORTB.OUTCLR = (1<<2)|(1<<3);
+	PORTC.OUTCLR = 0xFF;
+	PORTD.OUTCLR = 0x3F;
+		
+	PORTB.DIRSET = (1<<2)|(1<<3);
+	PORTC.DIRSET = 0xFF;
+	PORTD.DIRSET = 0x3F;
 }

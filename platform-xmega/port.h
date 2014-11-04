@@ -32,25 +32,43 @@
 #ifndef PORT_H_
 #define PORT_H_
 
-#define PORT_PIN0	(PORTC.IN&(1<<7)) // SIG_IS1_RX	PC7
-#define PORT_PIN1	(PORTC.IN&(1<<6)) // SIG_IS2_RX	PC6
-#define PORT_PIN2	(PORTD.IN&(1<<5)) // SIG_IS1_TX	PD5
-#define PORT_PIN3	(PORTC.IN&(1<<5)) // SIG_IS2_TX	PC5
-#define PORT_PIN4	(PORTD.IN&(1<<1)) // SIG_IS1_O	PD1
-#define PORT_PIN5	(PORTD.IN&(1<<0)) // SIG_IS2_O	PD0
-#define PORT_PIN6	// SIG_S12_PWM	PC2
-#define PORT_PIN7	// SIG_S22_PWM	PC3
+#define PORT_PIN0	(PORTB.IN&(1<<2)) // P1
+#define PORT_PIN1	(PORTC.IN&(1<<2)) // P2
+#define PORT_PIN2	(PORTB.IN&(1<<3)) // P3
+#define PORT_PIN3	(PORTC.IN&(1<<3)) // P4
+#define PORT_PIN4	(PORTC.IN&(1<<0)) // P5
+#define PORT_PIN5	(PORTC.IN&(1<<4)) // P6
+#define PORT_PIN6	(PORTC.IN&(1<<1)) // P7
+#define PORT_PIN7	(PORTC.IN&(1<<5)) // P8
+
+#define PORT_PIN8	(PORTC.IN&(1<<6)) // P9
+#define PORT_PIN9	(PORTD.IN&(1<<2)) // P10
+#define PORT_PIN10	(PORTC.IN&(1<<7)) // P11
+#define PORT_PIN11	(PORTD.IN&(1<<3)) // P12
+#define PORT_PIN12	(PORTD.IN&(1<<0)) // P13
+#define PORT_PIN13	(PORTD.IN&(1<<4)) // P14
+#define PORT_PIN14	(PORTD.IN&(1<<1)) // P15
+#define PORT_PIN15	(PORTD.IN&(1<<5)) // P16
 
 #define PORT_PIN_STATUS(VAR)	do { \
-	uint8_t temp8;\
-	temp8 = PORT_PIN0?1:0; \
-	temp8 |= PORT_PIN1?2:0; \
-	temp8 |= PORT_PIN2?4:0; \
-	temp8 |= PORT_PIN3?8:0; \
-	temp8 |= PORT_PIN4?16:0; \
-	temp8 |= PORT_PIN5?32:0; \
-	temp8 |= (ACA.STATUS&AC_AC0STATE_bm)?64:0; \
-	VAR = temp8; \
+	uint16_t temp16;\
+	temp16 = PORT_PIN0?1:0; \
+	temp16 |= PORT_PIN1?2:0; \
+	temp16 |= PORT_PIN2?4:0; \
+	temp16 |= PORT_PIN3?8:0; \
+	temp16 |= PORT_PIN4?16:0; \
+	temp16 |= PORT_PIN5?32:0; \
+	temp16 |= PORT_PIN6?64:0; \
+	temp16 |= PORT_PIN7?128:0; \
+	temp16 |= PORT_PIN8?256:0; \
+	temp16 |= PORT_PIN9?512:0; \
+	temp16 |= PORT_PIN10?1024:0; \
+	temp16 |= PORT_PIN11?2048:0; \
+	temp16 |= PORT_PIN12?4096:0; \
+	temp16 |= PORT_PIN13?8192:0; \
+	temp16 |= PORT_PIN14?16384:0; \
+	temp16 |= PORT_PIN15?32768:0; \
+	VAR = temp16; \
 } while (0);
 
 
@@ -61,7 +79,7 @@
 #define PORT_MODE_PULLUP_ENABLE		2
 #define PORT_MODE_RELAY_MONOSTABLE	3
 
-#define PWM_PORT_COUNT	7
+#define PWM_PORT_COUNT	16
 
 #define PWM_TIMER_PRESCALER	8
 #define PWM_TICK_PERIOD     250L        // 250us tick for PWM Engine
@@ -94,9 +112,9 @@ void pwm_init(void);
 void pwm_tick(void);
 void pwm_step(void);
 
-extern uint8_t port_do_select;
-extern uint8_t port_do;
-extern uint8_t port_di;
+extern uint16_t port_do_select;
+extern uint16_t port_do;
+extern uint16_t port_di;
 
 extern uint8_t port_mode;
 
