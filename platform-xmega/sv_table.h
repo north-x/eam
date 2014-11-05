@@ -48,9 +48,6 @@
 #include <string.h>
 
 void cmd_exec(void);
-void tse_update_page_read(void);
-void tse_update_page_write(void);
-void tse_update_time_ratio(void);
 void dimm_target_parameter_update(void);
 void dimm_delta_parameter_update(void);
 void ln_update_threshold(void);
@@ -64,7 +61,7 @@ extern uint8_t ln_gpio_opcode_tx2;
 
 uint8_t dimm_target_temp;
 uint8_t dimm_delta_temp;
-uint8_t dimm_parameter_select;
+uint16_t dimm_parameter_select;
 uint8_t cmd_register = 0;
 
 extern uint8_t ubasic_script_status;
@@ -85,21 +82,21 @@ SV_MSB(4, "Serial Number H", eeprom.sv_serial_number, 0)
 SV(5, "Command Register", cmd_register, cmd_exec)
 SV(6, "Config Register 1", eeprom.configA, wa2_update_configuration)
 SV(7, "Config Register 2", eeprom.configB, wa2_update_configuration)
-/*SV(8, "User Register 1", tse_user_reg1, 0)
-SV(9, "User Register 2", tse_user_reg2, 0)*/
+SV_CONST(8, "User Register 1", 8)
+SV_CONST(9, "User Register 2", 9)
 SV(10, "LN GPIO Status", ln_gpio_status, 0)
 SV(11, "LN GPIO Status Transmit", ln_gpio_status_tx, 0)
 SV(12, "LN Threshold Voltage x10", eeprom.ln_threshold, ln_update_threshold)
-SV(13, "Port Digital Output Select", port_do_select, 0)
-SV(14, "Port Digital Output Cmd", port_do, 0)
-SV(15, "Port Digital Input Status", port_di, 0)
-SV(16, "PWM Port Select", dimm_parameter_select, 0)
-SV(17, "PWM Port Target", dimm_target_temp, dimm_target_parameter_update)
-SV(18, "PWM Port Delta", dimm_delta_temp, dimm_delta_parameter_update)
-SV(19, "Relay Command", relay_request, 0)
-SV_MSB(20, "Servo 1 Minimum H", eeprom.servo_min[0], servo_update_configuration)
-SV_MSB(21, "Servo 1 Maximum H", eeprom.servo_max[0], servo_update_configuration)
-SV(22, "Servo 1 Speed", eeprom.servo_time_ratio[0], servo_update_configuration)
+SV_LSB(13, "Port Digital Output Select", port_do_select, 0)
+SV_MSB(14, "Port Digital Output Select", port_do_select, 0)
+SV_LSB(15, "Port Digital Input Status", port_di, 0)
+SV_MSB(16, "Port Digital Input Status", port_di, 0)
+SV_LSB(17, "Port Digital Output Cmd", port_do, 0)
+SV_MSB(18, "Port Digital Output Cmd", port_do, 0)
+SV_LSB(19, "PWM Port Select L", dimm_parameter_select, 0)
+SV_MSB(20, "PWM Port Select H", dimm_parameter_select, 0)
+SV(21, "PWM Port Target", dimm_target_temp, dimm_target_parameter_update)
+SV(22, "PWM Port Delta", dimm_delta_temp, dimm_delta_parameter_update)
 SV_LSB(23, "Servo 1 Minimum L", eeprom.servo_min[0], servo_update_configuration)
 SV_LSB(24, "Servo 1 Maximum L", eeprom.servo_max[0], servo_update_configuration)
 SV_MSB(25, "Servo 2 Minimum H", eeprom.servo_min[1], servo_update_configuration)
@@ -112,8 +109,12 @@ SV_MSB(31, "Standby Delay H", eeprom.servo_timeout, 0)
 SV_LSB(32, "Startup Delay L", eeprom.servo_startup_delay, 0)
 SV_MSB(33, "Startup Delay H", eeprom.servo_startup_delay, 0)
 SV(34, "Servo Start Method", eeprom.servo_start_method, servo_mode_update)
-SV_LSB(35, "UBasic Status", ubasic_script_status, 0)
+SV(35, "UBasic Status", ubasic_script_status, 0)
 SV(36, "UBasic Autostart", eeprom.ubasic_autostart, 0)
+SV_CONST(37, "TSE Time Ratio 1", 37)
+SV_CONST(38, "TSE Time Ratio 2", 38)
+SV_CONST(39, "TSE Time Ratio 3", 39)
+SV_CONST(40, "TSE Time Ratio 4", 40)
 SV(41, "LN GPIO 1 On Opcode 1", eeprom.ln_gpio_opcode[0][0], 0)
 SV(42, "LN GPIO 1 On Opcode 2", eeprom.ln_gpio_opcode[0][1], 0)
 SV(43, "LN GPIO 1 On Opcode 3", eeprom.ln_gpio_opcode[0][2], 0)

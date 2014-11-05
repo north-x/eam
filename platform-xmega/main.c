@@ -67,7 +67,7 @@ void init(void)
 	usb_init();
 	loconet_init();
 	port_init();
-	servo_init();
+	//servo_init();
 	
 	wa2_update_configuration();
 	ubasic_start();

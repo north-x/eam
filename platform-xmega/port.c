@@ -569,6 +569,12 @@ void pwm_init(void)
 	}
 	
 	cur_dimm = DIMM_RANGE_MIN;
+	pwm_port[3].dimm_current = DIMM_RANGE_MIN + PWM_STEPS/2 + 1;
+	pwm_port[3].dimm_target = pwm_port[3].dimm_current;
+	
+	pwm_port[2].dimm_current = DIMM_RANGE_MAX + 1;
+	pwm_port[2].dimm_target = pwm_port[2].dimm_current;
+	
 	
 	PORTB.PIN2CTRL = PORT_OPC_TOTEM_gc;
 	PORTB.PIN3CTRL = PORT_OPC_TOTEM_gc;
