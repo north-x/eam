@@ -34,6 +34,7 @@
 #include "sv_support.h"
 #include "eeprom.h"
 
+#include "loconet.h"
 #include "SVStorage.h"  // interface to public configuration storage in EEPROM
 #include "IdStorage.h"
 
@@ -45,15 +46,18 @@ uint16_t sv_count = 0;
 inline byte readSVStorage(word offset)
 {
 	uint8_t index;
+	sv_entry_t entry;
 	
 	if (offset<SV_COUNT)
 	{
-		switch (sv_table[offset].type&0xF)
+		memcpy_P(&entry,&sv_table[offset],sizeof(sv_entry_t));
+		
+		switch (entry.type&0xF)
 		{
 			case 1:
-				return *((uint8_t *)sv_table[offset].variable);
+				return *((uint8_t *)entry.variable);
 			case 5:
-				return (uint8_t) (intptr_t) sv_table[offset].variable;
+				return (uint8_t) (intptr_t) entry.variable;
 		}
 		return 0;
 	}
@@ -88,18 +92,21 @@ inline byte readSVStorage(word offset)
 byte writeSVStorage(word offset, byte value)
 {
 	uint8_t index;
+	sv_entry_t entry;
 	
 	if (offset<SV_COUNT)
 	{
-		switch (sv_table[offset].type&0xF)
+		memcpy_P(&entry,&sv_table[offset],sizeof(sv_entry_t));
+				
+		switch (entry.type&0xF)
 		{
 			case 1:
-				*((uint8_t *)sv_table[offset].variable) = value;
+				*((uint8_t *)entry.variable) = value;
 				break;
 		}
 		
-		if (sv_table[offset].update!=0)
-			sv_table[offset].update();
+		if (entry.update!=0)
+			entry.update();
 	}
 	else
 	{
@@ -149,7 +156,7 @@ word writeSVDestinationId(word usId)
 {
 	eeprom.sv_destination_id = usId;
 	eeprom_shadow.sv_destination_id = usId;
-	eeprom_write_word((void *)((void *)&eeprom.salt - (void *)&eeprom.sv_destination_id), usId);
+	eeprom_update_word(&eeprom_eemem.sv_destination_id, usId);
 	return 0;
 }
 

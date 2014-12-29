@@ -191,7 +191,7 @@
 			#define BASIC_USER_EXTENSIONS
 				#define USER_FUNCTION(name,text,func,param)	extern I16 func (T_USER_FUNC_DATAS stDatas);
 				#define USER_VARIABLE(name,text,var,size)
-				#define USER_ARRAY(name,text,var,size)
+				#define USER_ARRAY(name,text,var,type,size)
 					#include BASIC_CONFIG_FILE
 				#undef USER_FUNCTION
 				#undef USER_VARIABLE

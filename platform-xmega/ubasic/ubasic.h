@@ -71,6 +71,7 @@
 		void ubasic_load_scripts(void);
 		void ubasic_load_default_scripts(void);
 		void ubasic_save_scripts(void);
+		void ubasic_supervisor(void);
 /*--- Datentyp für For-Schleifen ---*/
 
 typedef struct
@@ -94,7 +95,11 @@ typedef struct
 	I16					basic_timer;	// aktueller Timerstand (wird durch "wait" gesetzt)
 
 	/*--- Externe Variablen wenn Compiler benutzt wird ---*/
-
+	TOKEN	userkeywordindex;								// Index des erkannten Keywords (-1 = nicht gefunden)
+	char 	userkeywordtype;								// Typ des erkannten Keywords 1 : Funktion 2 : Variable 3 : Array)
+	int 	userkeyworddata;								// zus. Daten des erk. Keywords (Index für Array)
+	void *userkeywordptr;							// Zeiger auf Fkt/Var/Array (je nach Typ)
+	
 	//I8		runmode;				// Run-Modus (RM_TEXT/RM_COMPILED)
 	I16	gototokenpos;		// zuletzt ermittelte Goto/Gosub Tokenposition (nur runmode == RM_COMPILED)
 	//unsigned char stringlength;											// aktuelle String-länge

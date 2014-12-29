@@ -172,9 +172,9 @@
 		#define MAX_VARNUM						26
 
 		// Maximale Programmlänge (nur für das demo)
-		#define MAX_PROGRAM_LEN 			128
+		#define MAX_PROGRAM_LEN 			255
 
-		#define UBASIC_SCRIPT_COUNT	2
+		#define UBASIC_SCRIPT_COUNT	3
 
 	#endif
 
@@ -363,18 +363,45 @@
 		USER_VARIABLE 	(SYSTICK,			"systick",  systick, 1					)
 	
 		USER_ARRAY			(ADC_ARRAY,		"adc",      adc,    			8	) */
-		USER_VARIABLE(1, "ln_gpio_status_name", ln_gpio_status, 1)
-		USER_VARIABLE(2, "ln_gpio_status_tx", ln_gpio_status_tx, 1)
-		USER_VARIABLE(3, "relay_request", relay_request, 1)
-		USER_VARIABLE(4, "servo1_time_delta", servo[0].time_delta, 1)
-		USER_VARIABLE(5, "servo1_setpoint", servo[0].position_setpoint, 1)
-		USER_VARIABLE(6, "servo2_time_delta", servo[1].time_delta, 1)
-		USER_VARIABLE(7, "servo2_setpoint", servo[1].position_setpoint, 1)
-		USER_VARIABLE(8, "port_di", port_di, 1)
-		USER_VARIABLE(9, "port_do_select", port_do_select, 1)
-		USER_VARIABLE(10, "port_do", port_do, 1)
-		USER_VARIABLE(11, "ln_gpio_opcode_tx", ln_gpio_opcode_tx, 1)
-		USER_VARIABLE(12, "ln_gpio_opcode_tx2", ln_gpio_opcode_tx2, 1)
+USER_VARIABLE(1, "ln_gpio_status", ln_gpio_status, 1)
+USER_VARIABLE(2, "ln_gpio_status_tx", ln_gpio_status_tx, 1)
+USER_VARIABLE(3, "relay_request", relay_request, 1)
+USER_VARIABLE(4, "servo1_time_delta", servo[0].time_delta, 1)
+USER_VARIABLE(5, "servo1_setpoint", servo[0].position_setpoint, 1)
+USER_VARIABLE(6, "servo1_position", servo[0].position_actual, 1)
+USER_VARIABLE(7, "servo2_time_delta", servo[1].time_delta, 1)
+USER_VARIABLE(8, "servo2_setpoint", servo[1].position_setpoint, 1)
+USER_VARIABLE(9, "servo2_position", servo[1].position_actual, 1)
+USER_VARIABLE(10, "port_di", port_di, 1)
+USER_VARIABLE(11, "port_do", port_do, 1)
+USER_VARIABLE(12, "port_do_select", port_do_select, 1)
+USER_VARIABLE(13, "port_mode", port_mode, 1)
+USER_VARIABLE(14, "ln_gpio_opcode_tx", ln_gpio_opcode_tx, 1)
+USER_VARIABLE(15, "ln_gpio_opcode_tx2", ln_gpio_opcode_tx2, 1)
+USER_VARIABLE(16, "pwm_port1_target", pwm_port[0].dimm_target, 1)
+USER_VARIABLE(17, "pwm_port2_target", pwm_port[1].dimm_target, 1)
+USER_VARIABLE(18, "pwm_port3_target", pwm_port[2].dimm_target, 1)
+USER_VARIABLE(19, "pwm_port4_target", pwm_port[3].dimm_target, 1)
+USER_VARIABLE(20, "pwm_port5_target", pwm_port[4].dimm_target, 1)
+USER_VARIABLE(21, "pwm_port6_target", pwm_port[5].dimm_target, 1)
+USER_VARIABLE(22, "pwm_port7_target", pwm_port[6].dimm_target, 1)
+USER_VARIABLE(23, "pwm_port1_delta", pwm_port[0].dimm_delta, 1)
+USER_VARIABLE(24, "pwm_port2_delta", pwm_port[1].dimm_delta, 1)
+USER_VARIABLE(25, "pwm_port3_delta", pwm_port[2].dimm_delta, 1)
+USER_VARIABLE(26, "pwm_port4_delta", pwm_port[3].dimm_delta, 1)
+USER_VARIABLE(27, "pwm_port5_delta", pwm_port[4].dimm_delta, 1)
+USER_VARIABLE(28, "pwm_port6_delta", pwm_port[5].dimm_delta, 1)
+USER_VARIABLE(29, "pwm_port7_delta", pwm_port[6].dimm_delta, 1)
+USER_FUNCTION(30, "rand", ubasic_random,0)
+USER_FUNCTION(31, "sv_read", ubasic_sv_read,1)
+USER_FUNCTION(32, "sv_write", ubasic_sv_write,2)
+USER_ARRAY(33, "pwm_delta", pwm_delta,1,7)
+USER_ARRAY(34, "pwm_targert", pwm_target,1,7)
+USER_VARIABLE(35, "pwm_update_trig", pwm_update_trig, 3)
+USER_VARIABLE(36, "pwm_update_cont", pwm_update_cont, 3)
+USER_VARIABLE(37, "pwm_at_setpoint", pwm_at_setpoint, 3)
+USER_FUNCTION(38, "pwm_set", ubasic_pwm_update,3)
+
 
 
 	#endif

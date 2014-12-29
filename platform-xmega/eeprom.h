@@ -77,6 +77,8 @@ extern struct t_eeprom_storage eeprom;
 extern struct t_eeprom_storage eeprom_shadow;
 extern struct t_eeprom_status eeprom_status;
 extern struct t_eeprom_status eeprom_status_shadow;
+extern struct t_eeprom_storage eeprom_eemem;
+extern struct t_eeprom_status eeprom_status_eemem;
 
 extern unsigned char eeprom_temp;
 void eeprom_test_read(void);

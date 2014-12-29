@@ -12,10 +12,12 @@
 
 uint16_t getID16(void)
 {
-	uint8_t address;
+	uint8_t address, temp8;
 	uint16_t id = 0;
 	
 	NVM.CMD = NVM_CMD_NO_OPERATION_gc;
+	
+	CRC.CTRL = CRC_RESET0_bm | CRC_SOURCE_IO_gc;
 	
 	while (NVM.STATUS&NVM_NVMBUSY_bm);
 	
@@ -23,11 +25,14 @@ uint16_t getID16(void)
 	
 	for (address=offsetof(NVM_PROD_SIGNATURES_t, LOTNUM0);address<=offsetof(NVM_PROD_SIGNATURES_t, COORDY1);address++)
 	{
-		id += pgm_read_byte(address);
+		temp8 = pgm_read_byte(address);
+		CRC.DATAIN = temp8;
+		id += temp8;
 		__asm__ __volatile__("");
 	}
 	
 	NVM.CMD = NVM_CMD_NO_OPERATION_gc;
+	id = (CRC.CHECKSUM1<<8) + CRC.CHECKSUM0;
 	return id;
 }
 

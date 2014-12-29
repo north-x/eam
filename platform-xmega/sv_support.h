@@ -51,7 +51,7 @@ typedef struct sv_block_entry {
 	void *variable;
 } sv_block_entry_t;
 
-#define SV_TABLE_BEGIN()   const struct sv_entry sv_table[] = {
+#define SV_TABLE_BEGIN()   const struct sv_entry sv_table[] PROGMEM = {
 #define SV_CONST(x, name, val)	[x] = { 5, (void *) val, 0},
 #define SV(x, name, var, update)	[x] = { 1, &(var), update },
 #define SV_LSB(x, name, var, update)	[x] = { 1, &(((uint8_t *)&var)[0]), update },

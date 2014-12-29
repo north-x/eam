@@ -178,6 +178,8 @@ uint16_t servo_calc_next_val(uint8_t num)
     posl = posl / delta_t;                                              // interpolated value
     posl = posl + (int16_t)servo[num].position_start * 128L;      // +offset (gain 128)
                                                                         // range 0 ... 32640
+																		
+	servo[num].position_actual = (uint8_t) (posl/128L);
     // now correct for 255 as full scale of curve
 
     posl = posl * 256L;
@@ -228,6 +230,7 @@ void servo_init(void)
 		servo[index].time_delta = 4;
 		servo[index].position_setpoint = eeprom_status.servo_position[index];
 		servo[index].position_start = eeprom_status.servo_position[index];
+		servo[index].position_actual = eeprom_status.servo_position[index];
 		servo[index].active_time = 0;
 	}
 	

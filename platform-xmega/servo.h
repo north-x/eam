@@ -99,6 +99,7 @@ typedef struct SERVO_T
 	uint8_t time_delta;
 	uint8_t position_setpoint;
 	uint8_t position_start;
+	uint8_t position_actual;
 	uint16_t pulse_value;
 } t_servo;
 

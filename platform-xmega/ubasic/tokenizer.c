@@ -126,11 +126,7 @@ char	insert_cr;		// Flag um CR im folgenden Token zu
 /*  --- Lokale Variablen für die Extensions --- */
 
 #ifdef BASIC_USES_EXTENSIONS
-	char  userkeyword [MAX_USER_KEYWORD_LEN];		// Buffer für zu suchendes Keyword für Extensions
-	TOKEN	userkeywordindex 	= 0;								// Index des erkannten Keywords (-1 = nicht gefunden)
-	char 	userkeywordtype  	= 0;								// Typ des erkannten Keywords 1 : Funktion 2 : Variable 3 : Array)
-	int 	userkeyworddata  	= 0;								// zus. Daten des erk. Keywords (Index für Array)
-	void *userkeywordptr 		= NULL;							// Zeiger auf Fkt/Var/Array (je nach Typ)
+// userkeyword handling moved to ctx
 #endif
 
 
@@ -420,16 +416,16 @@ CPOS  tokenizer_get_rel_pos(void)
 	/*  --- Liefert die Daten zum aktuellen Extension Aufruf --- */
 	TOKEN tokenizer_userdata(U8 *type, U16 *data, void **ptr)
 	{
-		*type = userkeywordtype;
-		*data = userkeyworddata;
-		*ptr  = userkeywordptr;
-		return userkeywordindex;
+		*type = ctx->userkeywordtype;
+		*data = ctx->userkeyworddata;
+		*ptr  = ctx->userkeywordptr;
+		return ctx->userkeywordindex;
 	}
 
 	/*  --- Liefert den Index des Extension Aufrufs --- */
 	TOKEN tokenizer_userdata_idx(void)
 	{
-		return userkeywordindex;
+		return ctx->userkeywordindex;
 	}
 #endif
 
@@ -565,10 +561,10 @@ TOKEN singlechar(void)
 				case TOKENIZER_NAME			:
 					ctx->tokendata [1] = get_token_byte ();
 					memcpy (&c, &(ctx->tokendata [1]), 1);
-					userkeywordindex 	= c;
-					userkeyworddata 	= pgm_read_byte (&(userdatas 	[c]));
-					userkeywordtype 	= pgm_read_byte (&(usertypes 	[c]));
-					userkeywordptr  	= pgm_read_ptr  (&(userpointer [c]));
+					ctx->userkeywordindex 	= c;
+					ctx->userkeyworddata 	= pgm_read_byte (&(userdatas 	[c]));
+					ctx->userkeywordtype 	= pgm_read_byte (&(usertypes 	[c]));
+					ctx->userkeywordptr  	= pgm_read_ptr  (&(userpointer [c]));
 					ctx->tokendata[2] = -1;
 					// Check if there is bitpos included
 					if (tok&(1<<7))
