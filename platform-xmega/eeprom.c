@@ -51,18 +51,18 @@ struct t_eeprom_storage eeprom_default = {
 			.salt = 0xAA+SOFTWARE_VERSION,
 			.sv_serial_number = 0xFFFF,
 			.sv_destination_id = 0xFFFF,
-			.ubasic_autostart = (0<<0)|(0<<2)|(0<<3),
-			.configA = (1<<WA2_CONF_PWM_OUTPUTS_ENABLE)|(0<<WA2_CONF_PWM_CHANNEL7_ENABLE)|(0<<WA2_CONF_INPUTS_PULLUP_ENABLE)|(1<<WA2_CONF_SERVO_ENABLE_PWM_A),
+			.ubasic_autostart = (0<<0)|(0<<1)|(0<<2)|(0<<3),
+			.configA = (0<<WA2_CONF_PWM_OUTPUTS_ENABLE)|(0<<WA2_CONF_PWM_CHANNEL7_ENABLE)|(1<<WA2_CONF_INPUTS_PULLUP_ENABLE)|(1<<WA2_CONF_SERVO_ENABLE_PWM_A),
 			.configB = 0,
 			.ln_threshold = 25,
 			.servo_startup_delay = 80,
 			.servo_timeout = 0,
 			.servo_start_method = 1,
-#if 1
+#if 0
 			.servo_min = {15000, 15000},
 			.servo_max = {45000, 45000},
 #else
-			.servo_min = {32768, 32768},
+			.servo_min = {32767, 32767},
 			.servo_max = {32768, 32768},
 #endif
 			.servo_time_ratio = {16, 16},
